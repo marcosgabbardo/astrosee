@@ -19,6 +19,7 @@ Know when to set up your telescope. Astrosee predicts observation quality based 
 ## Features
 
 - **Real-time Seeing Score** (0-100) based on multiple atmospheric factors
+- **macOS Menu Bar Widget** - Quick access to conditions without terminal
 - **7-Day Forecast** with daily summaries and trend charts
 - **Target Tracking** - Get conditions for specific objects (Jupiter, M31, etc.)
 - **Best Window Finder** - Automatically find optimal observation times
@@ -361,6 +362,31 @@ astrosee alert help
 - `moon_illumination` - Moon brightness (0-100%)
 - `moon_altitude` - Moon position (degrees)
 
+### `astrosee widget`
+
+Launch a macOS menu bar widget for quick access to seeing conditions.
+
+```bash
+# Start the widget (updates every 15 minutes)
+astrosee widget
+
+# Custom update interval
+astrosee widget --interval 30
+```
+
+The widget displays a telescope icon in your menu bar. Click to see:
+
+![Astrosee Widget](docs/images/widget.png)
+
+- 📍 **Current location**
+- 🔭 **Seeing score** with quality rating
+- 🌡️ **Weather conditions** (temp, wind, clouds, humidity)
+- 🌙 **Moon phase** and position
+- 📊 **Best observation window** for tonight
+- 📅 **Upcoming nights** forecast
+
+The widget runs in the background and auto-refreshes. Quit from the menu or press `Ctrl+C` in terminal.
+
 ## Understanding the Seeing Score
 
 Astrosee calculates a composite score from 0-100 based on atmospheric conditions:
@@ -540,6 +566,7 @@ astrosee/
 │   ├── scoring/        # Seeing score engine
 │   ├── display/        # Rich terminal UI
 │   ├── storage/        # Cache and config management
+│   ├── widget/         # macOS menu bar widget (rumps)
 │   └── core/           # Exceptions and utilities
 ├── tests/              # Pytest test suite
 ├── pyproject.toml      # Package configuration
