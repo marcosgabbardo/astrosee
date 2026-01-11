@@ -281,3 +281,174 @@ class ChartRenderer:
             lines.append(f"{name:15} {bar} {score:5.1f}")
 
         return "\n".join(lines)
+
+    def render_altitude_profile(
+        self,
+        profile: list[tuple[datetime, float]],
+        min_altitude: float = 30.0,
+        width: int = 50,
+        height: int = 8,
+    ) -> str:
+        """Render altitude profile as ASCII chart.
+
+        Args:
+            profile: List of (time, altitude) tuples
+            min_altitude: Minimum altitude threshold to show as line
+            width: Chart width in characters
+            height: Chart height in lines
+
+        Returns:
+            ASCII chart string
+        """
+        if not profile:
+            return "No data to display"
+
+        if self.is_iterm2():
+            return self._render_altitude_matplotlib(profile, min_altitude, width, height)
+        else:
+            return self._render_altitude_ascii(profile, min_altitude, width, height)
+
+    def _render_altitude_ascii(
+        self,
+        profile: list[tuple[datetime, float]],
+        min_altitude: float,
+        width: int,
+        height: int,
+    ) -> str:
+        """Render altitude profile as ASCII chart.
+
+        Args:
+            profile: List of (time, altitude) tuples
+            min_altitude: Minimum altitude threshold
+            width: Chart width
+            height: Chart height
+
+        Returns:
+            ASCII chart string
+        """
+        altitudes = [alt for _, alt in profile]
+
+        # Calculate max altitude (round up to nearest 10)
+        max_alt = max(90, ((max(altitudes) + 10) // 10) * 10)
+        min_alt = 0
+
+        # Resample if needed
+        if len(altitudes) > width:
+            step = len(altitudes) / width
+            resampled = []
+            for i in range(width):
+                idx = int(i * step)
+                resampled.append(altitudes[idx])
+            altitudes = resampled
+
+        lines = []
+
+        # Chart body
+        for row in range(height):
+            threshold = max_alt - (row / (height - 1)) * (max_alt - min_alt)
+            line = []
+
+            for alt in altitudes:
+                if alt >= threshold:
+                    line.append("█")
+                else:
+                    line.append(" ")
+
+            # Y-axis label
+            if row == 0:
+                label = f"{int(max_alt):3d}°"
+            elif row == height - 1:
+                label = f"{int(min_alt):3d}°"
+            else:
+                mid_val = max_alt - (row / (height - 1)) * (max_alt - min_alt)
+                if abs(mid_val - min_altitude) < (max_alt - min_alt) / height:
+                    label = f"{int(min_altitude):3d}°"
+                else:
+                    label = "    "
+
+            # Mark minimum altitude threshold
+            if abs(threshold - min_altitude) < (max_alt - min_alt) / height:
+                lines.append(f"{label}┤{''.join(line)} ← min")
+            else:
+                lines.append(f"{label}┤{''.join(line)}")
+
+        # X-axis
+        lines.append("    └" + "─" * len(altitudes))
+
+        # X-axis labels
+        if profile:
+            first_time = profile[0][0].strftime("%H:%M")
+            mid_idx = len(profile) // 2
+            mid_time = profile[mid_idx][0].strftime("%H:%M")
+            last_time = profile[-1][0].strftime("%H:%M")
+
+            spacing = len(altitudes) // 2 - 5
+            label_line = f"     {first_time}" + " " * max(0, spacing) + mid_time
+            remaining = len(altitudes) - len(label_line) + 5
+            label_line += " " * max(0, remaining - 5) + last_time
+            lines.append(label_line)
+
+        return "\n".join(lines)
+
+    def _render_altitude_matplotlib(
+        self,
+        profile: list[tuple[datetime, float]],
+        min_altitude: float,
+        width: int,
+        height: int,
+    ) -> str:
+        """Render altitude profile using matplotlib for iTerm2.
+
+        Args:
+            profile: List of (time, altitude) tuples
+            min_altitude: Minimum altitude threshold
+            width: Chart width
+            height: Chart height
+
+        Returns:
+            iTerm2 escape sequence with inline image
+        """
+        try:
+            import matplotlib
+            matplotlib.use("Agg")
+            import matplotlib.pyplot as plt
+            import matplotlib.dates as mdates
+        except ImportError:
+            return self._render_altitude_ascii(profile, min_altitude, width, height)
+
+        times = [t for t, _ in profile]
+        altitudes = [alt for _, alt in profile]
+
+        # Create figure
+        fig_width = width / 10
+        fig_height = height / 3
+        fig, ax = plt.subplots(figsize=(fig_width, fig_height))
+
+        # Plot altitude curve with fill
+        ax.plot(times, altitudes, linewidth=2, color="#4CAF50")
+        ax.fill_between(times, altitudes, alpha=0.3, color="#4CAF50")
+
+        # Minimum altitude threshold line
+        ax.axhline(y=min_altitude, color="orange", linestyle="--",
+                   alpha=0.7, linewidth=1.5, label=f"Min: {min_altitude}°")
+
+        # Styling
+        ax.set_ylim(0, max(90, max(altitudes) + 5))
+        ax.set_ylabel("Altitude (°)", fontsize=10)
+        ax.grid(True, alpha=0.3)
+        ax.legend(loc="upper right", fontsize=8)
+
+        # Format x-axis
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+        plt.xticks(rotation=45, fontsize=8)
+        plt.yticks(fontsize=8)
+
+        plt.tight_layout()
+
+        # Save to buffer
+        buf = io.BytesIO()
+        fig.savefig(buf, format="png", dpi=100, facecolor="white")
+        plt.close(fig)
+
+        buf.seek(0)
+        return self._iterm2_image(buf.read())

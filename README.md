@@ -23,6 +23,8 @@ Know when to set up your telescope. Astrosee predicts observation quality based 
 - **7-Day Forecast** with daily summaries and trend charts
 - **Target Tracking** - Get conditions for specific objects (Jupiter, M31, etc.)
 - **Best Window Finder** - Automatically find optimal observation times
+- **Timelapse Planner** - Find optimal multi-hour imaging windows with altitude tracking
+- **Session Logger** - Track observations with ratings, notes, and equipment
 - **Live Watch Mode** - Continuous monitoring with auto-refresh
 - **Location Comparison** - Compare conditions across multiple sites
 - **Smart Alerts** - Get notified when conditions are perfect
@@ -387,6 +389,80 @@ The widget displays a telescope icon in your menu bar. Click to see:
 
 The widget runs in the background and auto-refreshes. Quit from the menu or press `Ctrl+C` in terminal.
 
+### `astrosee session`
+
+Track observation sessions with targets, ratings, and notes.
+
+```bash
+# Start a new session (captures current conditions)
+astrosee session start
+
+# Log targets you observe
+astrosee session log "Jupiter" --rating 5 --notes "Great bands visible"
+astrosee session log "M42" -r 4 -n "Good nebulosity"
+
+# Add general notes
+astrosee session note "Seeing improved after midnight"
+
+# End the session
+astrosee session end
+
+# View past sessions
+astrosee session list
+astrosee session show 2024-01-15T21-30-00
+
+# Export all sessions
+astrosee session export -f json -o sessions.json
+astrosee session export -f csv -o sessions.csv
+```
+
+**Session data is stored in `~/.astrosee/sessions/` as JSON files.**
+
+### `astrosee equipment`
+
+Manage your observation equipment.
+
+```bash
+# Add equipment
+astrosee equipment add "Celestron 8SE" --type telescope --aperture 203mm --focal-length 2032mm
+astrosee equipment add "32mm Plossl" --type eyepiece --focal-length 32mm
+astrosee equipment add "ZWO ASI294MC" --type camera --notes "Color planetary camera"
+
+# List all equipment
+astrosee equipment list
+astrosee equipment list --type eyepiece
+
+# Show/remove equipment
+astrosee equipment show celestron-8se
+astrosee equipment remove old-eyepiece
+```
+
+**Equipment types:** telescope, eyepiece, camera, mount, filter, barlow, focuser, other
+
+**Equipment data is stored in `~/.astrosee/equipment.toml`.**
+
+### `astrosee timelapse`
+
+Plan multi-hour imaging sessions by finding optimal windows.
+
+```bash
+# Find 4-hour window for M42 with minimum 30° altitude
+astrosee timelapse "M42" --duration 4h --min-altitude 30
+
+# Plan for a specific date
+astrosee timelapse "M31" --date 2024-01-20 --duration 6h
+
+# Search more days ahead with lower thresholds
+astrosee timelapse "Crab Nebula" -d 3h --days 14 --min-score 30
+```
+
+Shows:
+- Best observation window with start/end times
+- Altitude profile chart throughout the session
+- Seeing score range during the window
+- Moon interference warnings (rise/set, illumination, angular distance)
+- Alternative windows ranked by quality
+
 ## Understanding the Seeing Score
 
 Astrosee calculates a composite score from 0-100 based on atmospheric conditions:
@@ -427,6 +503,9 @@ Configuration is stored in `~/.astrosee/`:
 ```
 ~/.astrosee/
 ├── config.toml      # User settings and locations
+├── equipment.toml   # Equipment definitions
+├── sessions/        # Observation session logs
+│   └── *.json
 └── data/
     ├── cache.db     # Weather data cache
     └── de421.bsp    # Ephemeris file (downloaded automatically)

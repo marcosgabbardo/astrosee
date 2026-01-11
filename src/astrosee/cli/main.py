@@ -57,6 +57,7 @@ from astrosee.cli.commands import (
     now,
     session,
     target,
+    timelapse,
     watch,
     widget,
 )
@@ -72,6 +73,7 @@ cli.add_command(alert.alert)
 cli.add_command(widget.widget)
 cli.add_command(session.session)
 cli.add_command(equipment.equipment)
+cli.add_command(timelapse.timelapse)
 
 
 def main() -> None:
