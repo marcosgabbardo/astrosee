@@ -25,6 +25,7 @@ Know when to set up your telescope. Astrosee predicts observation quality based 
 - **Best Window Finder** - Automatically find optimal observation times
 - **Timelapse Planner** - Find optimal multi-hour imaging windows with altitude tracking
 - **Session Logger** - Track observations with ratings, notes, and equipment
+- **Equipment Advisor** - Get activity and equipment recommendations based on conditions
 - **Live Watch Mode** - Continuous monitoring with auto-refresh
 - **Location Comparison** - Compare conditions across multiple sites
 - **Smart Alerts** - Get notified when conditions are perfect
@@ -462,6 +463,27 @@ Shows:
 - Seeing score range during the window
 - Moon interference warnings (rise/set, illumination, angular distance)
 - Alternative windows ranked by quality
+
+### `astrosee advise`
+
+Get equipment and activity recommendations based on current conditions.
+
+```bash
+# General recommendations for tonight
+astrosee advise
+
+# Focus on specific activity
+astrosee advise --activity planetary_imaging
+astrosee advise --activity deep_sky_imaging
+
+# Get advice for a specific target
+astrosee advise --target "Jupiter"
+```
+
+Shows:
+- Activity suitability scores (visual, planetary imaging, deep-sky, widefield)
+- Equipment suggestions based on weather (dew heaters, wind shields, filters)
+- Best visible targets for current conditions
 
 ## Understanding the Seeing Score
 

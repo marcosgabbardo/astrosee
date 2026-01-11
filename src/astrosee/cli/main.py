@@ -48,6 +48,7 @@ def cli(ctx: click.Context, config_dir: Path | None, verbose: bool) -> None:
 
 # Import and register commands
 from astrosee.cli.commands import (
+    advise,
     alert,
     best_window,
     compare,
@@ -74,6 +75,7 @@ cli.add_command(widget.widget)
 cli.add_command(session.session)
 cli.add_command(equipment.equipment)
 cli.add_command(timelapse.timelapse)
+cli.add_command(advise.advise)
 
 
 def main() -> None:
