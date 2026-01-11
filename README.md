@@ -41,7 +41,7 @@ Know when to set up your telescope. Astrosee predicts observation quality based 
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/astrosee.git
+git clone https://github.com/marcosgabbardo/astrosee.git
 cd astrosee
 
 # Install in development mode
@@ -135,12 +135,44 @@ astrosee now --target Jupiter
 astrosee now -t M31 -l "Mountain Observatory"
 ```
 
-**Output includes:**
-- Overall seeing score (0-100)
-- Component breakdown (temperature, wind, humidity, clouds, jet stream)
-- Weather details
-- Moon phase and position
-- Observation recommendations
+**Example output:**
+
+```
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ ASTRONOMICAL SEEING FORECAST                                                 │
+│ Barra de Ibiraquera (28.16°S, 48.66°W)                                       │
+│ 2026-01-11 00:19                                                             │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭─────────────────────────────── Overall Score ────────────────────────────────╮
+│ 38  ███░░░░░░░  POOR                                                         │
+╰──────────────────────────────────────────────────────────────────────────────╯
+            Conditions Breakdown
+ ├─ Temperature Stability  61  ██████░░░░
+ ├─ Wind Conditions        39  ███░░░░░░░
+ ├─ Humidity               48  ████░░░░░░
+ ├─ Cloud Cover            21  ██░░░░░░░░
+ ├─ Jet Stream             95  █████████░
+
+           Atmospheric Details
+ ├─ Temp differential:  4.1°C (unstable)
+ ├─ Wind shear:         2.0 m/s (low)
+ ├─ Surface wind:       4.7 km/h NNW
+ ├─ Cloud cover:        91%
+ ├─ Humidity:           78%
+ ├─ Pressure:           1009 hPa
+ └─ Jet stream:         25 m/s (calm)
+
+Moon: 🌓 First Quarter (47% illuminated) (below horizon)
+
+╭─────────────────────────────── Recommendation ───────────────────────────────╮
+│ Poor conditions. Only bright objects recommended.                            │
+│                                                                              │
+│   Planets: Fair                                                              │
+│   Moon: Good                                                                 │
+│   Deep Sky: Fair                                                             │
+│   Imaging: Not recommended                                                   │
+╰──────────────────────────────────────────────────────────────────────────────╯
+```
 
 ### `astrosee forecast`
 
@@ -160,6 +192,41 @@ astrosee forecast --hourly
 astrosee forecast --no-chart
 ```
 
+**Example output:**
+
+```
+Score Trend
+100 ┤
+    ┤
+    ┤
+    ┤
+    ┤
+    ┤      ▄                                       ▂▂
+ 50 ┤ ▂▆▄ ▆█                                       ██▆
+    ┤▂███ ██            ▂▆ █               ▄       ███
+    ┤████ ██           ███ █     ▂▆▂     ▆██     ▂▄███
+    ┤████ ██   █▂  ▂   ███▂█  ▄ ▆███    ▂███    ▄█████      ███
+    ┤████ ██ █▂██  █   █████  ██████   ▆████    ██████      ███
+  0 ┤████▄██▄████▄▂█▆▄▄█████▄▆██████▄▆▄█████▆▆▆▆██████▆▄▄▄▄▄███▄▆
+    └────────────────────────────────────────────────────────────
+     00:00                      12:00                       23:00
+
+                  7-Day Forecast
+┏━━━━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Date     ┃ Score ┃ Summary                     ┃
+┡━━━━━━━━━━╇━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ Sun 11th │    41 │ Good. variable clouds. calm │
+│ Tue 13th │    33 │ Good. variable clouds. calm │
+│ Fri 16th │    31 │ Good. partly cloudy. calm   │
+│ Thu 15th │    28 │ Good. variable clouds. calm │
+│ Wed 14th │    24 │ Good. variable clouds. calm │
+│ Mon 12th │    23 │ Good. variable clouds. calm │
+│ Sat 17th │     4 │ Good. variable clouds. calm │
+└──────────┴───────┴─────────────────────────────┘
+
+⭐ Best night: Sun 11th (score: 41)
+```
+
 ### `astrosee target`
 
 Get conditions for a specific celestial object.
@@ -174,16 +241,46 @@ astrosee target M42
 astrosee target "Orion Nebula"
 astrosee target NGC7000
 
+# Bright stars
+astrosee target Sirius
+astrosee target Betelgeuse
+
 # With visibility forecast
 astrosee target M31 --hours 24
 ```
 
-**Output includes:**
-- Current position (altitude, azimuth)
-- Airmass quality rating
-- Seeing score adjusted for target
-- Rise/set times
-- Optimal viewing window
+**Example output:**
+
+```
+Target: Jupiter (Jupiter)
+Gas giant with bands
+
+Current Status:
+  Altitude: 23.6°
+  Azimuth: 45.5°
+  Airmass: 2.49 (Poor)
+  Magnitude: -2.9
+
+Seeing Score for Jupiter: 29/100 (Poor)
+
+             Target: Jupiter
+┏━━━━━━━┳━━━━━┳━━━━━━━━━┳━━━━━━━┳━━━━━━━┓
+┃ Time  ┃ Alt ┃ Airmass ┃ Score ┃ Night ┃
+┡━━━━━━━╇━━━━━╇━━━━━━━━━╇━━━━━━━╇━━━━━━━┩
+│ 00:00 │ 20° │    2.85 │    30 │  🌙   │
+│ 01:00 │ 29° │    2.03 │    25 │  🌙   │
+│ 02:00 │ 36° │    1.69 │    41 │  🌙   │
+│ 03:00 │ 39° │    1.57 │     4 │  🌙   │
+│ 04:00 │ 39° │    1.60 │    45 │  🌙   │
+│ 05:00 │ 34° │    1.78 │    47 │  🌙   │
+│ 06:00 │ 26° │    2.25 │    39 │  🌙   │
+│ 07:00 │ 17° │    3.48 │    28 │   ☀️   │
+│ 08:00 │  5° │    9.73 │    50 │   ☀️   │
+│ 23:00 │ 11° │    5.33 │    15 │   ☀️   │
+└───────┴─────┴─────────┴───────┴───────┘
+
+🎯 Optimal viewing: 03:00 (altitude: 39°, airmass: 1.57)
+```
 
 ### `astrosee best-window`
 
@@ -341,15 +438,19 @@ Astrosee uses free, publicly available APIs:
 
 ## Celestial Catalog
 
-Built-in catalog includes 200+ popular targets:
+Built-in catalog includes 80+ popular targets:
 
-**Planets:** Mercury, Venus, Mars, Jupiter, Saturn, Uranus, Neptune
+**Planets:** Mercury, Venus, Mars, Jupiter, Saturn, Uranus, Neptune + Moon
+
+**Bright Stars (21):** Sirius, Canopus, Alpha Centauri, Arcturus, Vega, Capella, Rigel, Procyon, Betelgeuse, Achernar, Hadar, Altair, Aldebaran, Spica, Antares, Pollux, Fomalhaut, Deneb, Regulus, Castor, Polaris
 
 **Messier Objects:** M1 (Crab), M13 (Hercules Cluster), M31 (Andromeda), M42 (Orion), M45 (Pleiades), M51 (Whirlpool), M57 (Ring), M81/M82, M101, M104 (Sombrero), and many more
 
 **NGC Highlights:** NGC 7000 (North America), NGC 6960 (Veil), NGC 4565 (Needle), NGC 5128 (Centaurus A)
 
 **Southern Gems:** Omega Centauri, 47 Tucanae, Carina Nebula, Tarantula Nebula, Magellanic Clouds, Jewel Box
+
+**Double Stars:** Albireo, Mizar and Alcor
 
 Search by name, catalog designation, or common aliases:
 ```bash
@@ -407,7 +508,7 @@ astrosee target "NGC 224"
 ### Setup Development Environment
 
 ```bash
-git clone https://github.com/yourusername/astrosee.git
+git clone https://github.com/marcosgabbardo/astrosee.git
 cd astrosee
 
 # Create virtual environment
