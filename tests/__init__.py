@@ -1,0 +1,1 @@
+"""Astrosee test suite."""
