@@ -52,8 +52,10 @@ from astrosee.cli.commands import (
     best_window,
     compare,
     config,
+    equipment,
     forecast,
     now,
+    session,
     target,
     watch,
     widget,
@@ -68,6 +70,8 @@ cli.add_command(watch.watch)
 cli.add_command(compare.compare)
 cli.add_command(alert.alert)
 cli.add_command(widget.widget)
+cli.add_command(session.session)
+cli.add_command(equipment.equipment)
 
 
 def main() -> None:
