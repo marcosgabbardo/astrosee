@@ -35,6 +35,7 @@ dependencies = [
     "tomli-w>=1.0",
     "plotille>=5.0",
     "matplotlib>=3.8",
+    "rumps>=0.4.0",
 ]
 
 [project.optional-dependencies]
@@ -48,6 +49,7 @@ dev = [
 
 [project.scripts]
 astrosee = "astrosee.cli.main:cli"
+astrosee-widget = "astrosee.widget.app:main"
 
 [project.urls]
 Homepage = "https://github.com/astrosee/astrosee"
@@ -57,7 +59,7 @@ Repository = "https://github.com/astrosee/astrosee"
 where = ["src"]
 
 [tool.setuptools.package-data]
-astrosee = ["astronomy/data/*.json"]
+astrosee = ["astronomy/data/*.json", "widget/assets/*.png"]
 
 [tool.ruff]
 line-length = 100
